@@ -18,17 +18,25 @@ public class TestaInsercao {
 		connection.setAutoCommit(false);
 		
 		
-		String sql = "INSERT INTO PRODUTO (nome, descricao) VALUES (?, ?)";
-		PreparedStatement pstm = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-		
-		adicionaVariavel("Smart TV", "45 polegadas",pstm);
-		adicionaVariavel("Notebook", "AMD Ryzen 5",pstm);
+		try {
+			String sql = "INSERT INTO PRODUTO (nome, descricao) VALUES (?, ?)";
+			PreparedStatement pstm = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+			
+			adicionaVariavel("Smart TV", "45 polegadas",pstm);
+			adicionaVariavel("Notebook", "AMD Ryzen 5",pstm);
 
-		//ESSE METODO DEVE SER CHAMADO POIS O COMMIT FOI SETADO PARA MANUAL
-		connection.commit();
+			//ESSE METODO DEVE SER CHAMADO POIS O COMMIT FOI SETADO PARA MANUAL
+			connection.commit();
 
-		pstm.close();
-		connection.close();
+			pstm.close();
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			
+			//CASO ACONTEÇA ALGUM PROBLEMA DURANTE A TRANSAÇÃO TODAS AS OPERAÇÕES SÃO DESCARTADAS E AS TABELAS VOLTAM PARA O ESTADO INICIAL
+			System.out.println("ROLLBACK");
+			connection.rollback();
+		}
 	}
 
 	private static void adicionaVariavel(String nome, String descricao, PreparedStatement pstm) throws SQLException {
