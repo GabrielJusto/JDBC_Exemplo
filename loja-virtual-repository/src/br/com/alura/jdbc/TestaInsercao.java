@@ -18,9 +18,10 @@ public class TestaInsercao {
 		connection.setAutoCommit(false);
 		
 		
-		try {
-			String sql = "INSERT INTO PRODUTO (nome, descricao) VALUES (?, ?)";
-			PreparedStatement pstm = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+		//TRY WHITH RESOURCES GARANTE QUE TODOS OS OBJETOS QUE ESTENDEM CLOSABLE VÃO SER FECHADO NO FINAL DO BLOCO
+		try (PreparedStatement pstm = connection.prepareStatement("INSERT INTO PRODUTO (nome, descricao) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
+				){
+			
 			
 			adicionaVariavel("Smart TV", "45 polegadas",pstm);
 			adicionaVariavel("Notebook", "AMD Ryzen 5",pstm);
@@ -44,11 +45,11 @@ public class TestaInsercao {
 		pstm.setString(2, descricao);
 		pstm.executeUpdate();
 
-		ResultSet rst = pstm.getGeneratedKeys();
-		while(rst.next()) {
-			Integer id = rst.getInt(1);
-			System.out.println("O id criado foi: " + id);
+		try (ResultSet rst = pstm.getGeneratedKeys()) {
+			while(rst.next()) {
+				Integer id = rst.getInt(1);
+				System.out.println("O id criado foi: " + id);
+			}
 		}
-		rst.close();
 	}
 }
